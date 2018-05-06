@@ -26,7 +26,7 @@ router.post('/login',function(req,res,next){
     const user = await User.login(req.body.phoneNumber,req.body.password)
     console.log(1)
     // 此处需要过期时间 和密钥
-    const token = JWT.sign({_id:user._id,iat:Date.now(),expire:Date.now()+20000},JWT_SECRET);
+    const token = JWT.sign({_id:user._id,iat:Date.now(),expire:Date.now()+24*60*60*1000},JWT_SECRET);
     console.log(2)
     return {
       code:0,

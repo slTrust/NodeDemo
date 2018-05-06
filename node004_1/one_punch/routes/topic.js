@@ -3,6 +3,9 @@ const router = express.Router();
 const User =  require('../modules/mongo/user');
 const Topic =  require('../modules/mongo/topic');
 
+// 鉴权中间件
+const auth = require('../middlewares/auth_user');
+
 // localhost:8002/topic/
 router.route('/')
   .get((req, res, next)=>{
@@ -16,7 +19,7 @@ router.route('/')
       .catch(e=>{
         next(e)
       })
-  }).post((req,res,next)=>{
+  }).post(auth(),(req,res,next)=>{
     (async()=>{
       let user = await User.getUserById(req.body.userId)
       let topic = await Topic.createANewTopic({
@@ -48,7 +51,7 @@ router.route('/:id')
         next(e)
       })
   })
-  .patch((req,res,next)=>{
+  .patch(auth(),(req,res,next)=>{
     (async()=>{
       let topic = await Topic.updateTopicById(req.params.id,{
         name:req.body.name,
@@ -66,7 +69,7 @@ router.route('/:id')
 
 // 帖子回复
 router.route('/:id/reply')
-  .post((req,res,next)=>{
+  .post(auth(),(req,res,next)=>{
     (async()=>{
       let user = await User.getUserById(req.body.userId)
       console.log(req.body)
