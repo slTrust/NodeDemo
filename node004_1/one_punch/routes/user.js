@@ -17,7 +17,14 @@ router.route('/')
       })
   }).post((req,res,next)=>{
     (async()=>{
-      let user = await User.createANewUser({name:req.body.name,age:req.body.age});
+      let user = await User.createANewUser(
+        {
+          name:req.body.name,
+          age:req.body.age,
+          name:req.body.name,
+          password:req.body.password,
+          phoneNumber:req.body.phoneNumber
+        });
       return { code:0, user }
     })()
       .then(r=>{
