@@ -18,7 +18,21 @@ router.post('/signUp',function(req,res,next){
 })
 
 router.post('/login',function(req,res,next){
-
+  (async ()=>{
+    const user = await User.login(req.body.phoneNumber,req.body.password)
+    return {
+      code:0,
+      data:{
+        user:user
+      }
+    }
+  })()
+    .then(r=>{
+      res.json(r)
+    })
+    .catch(e=>{
+      next(e)
+    })
 })
 
 module.exports = router;

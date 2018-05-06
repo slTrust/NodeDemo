@@ -21,7 +21,6 @@ router.route('/')
         {
           name:req.body.name,
           age:req.body.age,
-          name:req.body.name,
           password:req.body.password,
           phoneNumber:req.body.phoneNumber
         });

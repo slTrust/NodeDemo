@@ -94,10 +94,32 @@ async function updateUserById(userId,update){
     })
 } 
 
+// 登录方法编写 (这里面有一个坑 就是手机号重复的时候 没法校验)
+async function login(phoneNumber,password){
+    // 传递的密码先进行加密
+    password = await pbkdf2Async(password,SALT,512, 128 ,'sha1')
+    .then(r=>{
+        return r.toString();
+    })
+    .catch(e=>{
+        console.log(e)
+        throw new Error('密钥生成失败')
+    })
+    const user = await UserModule.findOne({phoneNumber:phoneNumber,password:password})
+        .select(DEFAULT_PROJECTION)    
+        .catch(e=>{
+            console.log(`error login ! phone ${phoneNumber}`,{err:e.stack||e});
+            throw new Error('error some wrong with the server')
+        })
+    if(!user) throw new Error('no such user!')
+    return user;
+}
+
 module.exports = {
     model:UserModule,
     createANewUser,
     getUsers,
     getUserById,
-    updateUserById
+    updateUserById,
+    login
 }
