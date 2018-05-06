@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
-const User =  require('../modules/in_memo/user');
-const Topic =  require('../modules/in_memo/topic');
+const User =  require('../modules/mongo/user');
+const Topic =  require('../modules/mongo/topic');
 
 // localhost:8002/topic/
 router.route('/')
@@ -20,7 +20,7 @@ router.route('/')
     (async()=>{
       let user = await User.getUserById(req.body.userId)
       let topic = await Topic.createANewTopic({
-        creater:user,
+        creator:user,
         title:req.body.title,
         content:req.body.content
       });
@@ -38,7 +38,7 @@ router.route('/')
 router.route('/:id')
   .get((req, res, next)=>{
     (async()=>{
-      let topic = await Topic.getTopicById(Number(req.params.id));
+      let topic = await Topic.getTopicById(req.params.id);
       return { code:0, topic }
     })()
       .then(r=>{
@@ -50,7 +50,7 @@ router.route('/:id')
   })
   .patch((req,res,next)=>{
     (async()=>{
-      let topic = await Topic.updateTopicById(Number(req.params.id),{
+      let topic = await Topic.updateTopicById(req.params.id,{
         name:req.body.name,
         age:req.body.age
       });
@@ -72,7 +72,7 @@ router.route('/:id/reply')
       console.log(req.body)
       let topic = await Topic.replyATopic({
         topicId:req.params.id,
-        creater:user,
+        creator:user,
         content:req.body.content
       });
       console.log(topic)
