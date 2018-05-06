@@ -2,6 +2,9 @@ const express = require('express');
 const router = express.Router();
 const User =  require('../modules/mongo/user');
 
+// 鉴权中间件
+const auth = require('../middlewares/auth_user');
+
 // localhost:8002/user/
 router.route('/')
   .get((req, res, next)=>{
@@ -49,7 +52,7 @@ router.route('/:id')
         next(e)
       })
   })
-  .patch((req,res,next)=>{
+  .patch(auth(),(req,res,next)=>{
     (async()=>{
       let update = {};
       if(req.body.name) update.name = req.body.name;
