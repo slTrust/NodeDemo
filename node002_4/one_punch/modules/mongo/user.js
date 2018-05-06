@@ -1,7 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
-const UserSchema =Schema({
+const UserSchema = new Schema({
     name:{type:String,require:true},
     age:{type:Number,max:[90,'大于90岁的人基本是不玩postman的']}
 })
