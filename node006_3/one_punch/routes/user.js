@@ -13,6 +13,9 @@ const path = require('path');
 // 第二是哈希分配  拿到用户的id 就能到对应位置找出来
 const upload = multer({ dest:path.join(__dirname,'../public/upload') })
 
+// 获取当前域名
+const HOST = process.env.NODE_ENV ==='production'?'http://aa.host/':'http://localhost:3000';
+
 // localhost:8002/user/
 router.route('/')
   .get((req, res, next)=>{
@@ -66,7 +69,10 @@ router.route('/:id')
       if(req.body.name) update.name = req.body.name;
       if(req.body.age) update.age = req.body.age;
       console.log(req.file)
+      update.avatar = `/upload/${req.file.filename}`;
       let user = await User.updateUserById(req.params.id,update);
+      // 返回数据的时候将图片路径拼接上 域名
+      user.avatar = `${HOST}${user.avatar}`;
       return { code:0, user }
     })()
       .then(r=>{

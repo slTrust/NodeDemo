@@ -10,7 +10,8 @@ const UserSchema = new Schema({
     name:{type:String,require:true},
     age:{type:Number,max:[90,'大于90岁的人基本是不玩postman的']},
     phoneNumber:String,
-    password:String
+    password:String,
+    avatar:String //头像
 })
 // 创建索引  这样就不在schema定义表单的时候  添加唯一索引了
 UserSchema.index({name:1},{unique:true})
