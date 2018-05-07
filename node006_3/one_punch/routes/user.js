@@ -5,6 +5,14 @@ const User =  require('../modules/mongo/user');
 // 鉴权中间件
 const auth = require('../middlewares/auth_user');
 
+// 文件上传 
+const multer = require('multer');
+const path = require('path');
+// 这里有个问题  如果是分布式系统  上传的是不同服务器 如何实现跨服务器文件访问呢？
+// 一个是七牛上传图片保存的外链
+// 第二是哈希分配  拿到用户的id 就能到对应位置找出来
+const upload = multer({ dest:path.join(__dirname,'../public/upload') })
+
 // localhost:8002/user/
 router.route('/')
   .get((req, res, next)=>{
@@ -52,11 +60,12 @@ router.route('/:id')
         next(e)
       })
   })
-  .patch(auth(),(req,res,next)=>{
+  .patch(auth(),upload.single('avatar'),(req,res,next)=>{
     (async()=>{
       let update = {};
       if(req.body.name) update.name = req.body.name;
       if(req.body.age) update.age = req.body.age;
+      console.log(req.file)
       let user = await User.updateUserById(req.params.id,update);
       return { code:0, user }
     })()
