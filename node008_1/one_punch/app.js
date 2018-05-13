@@ -1,17 +1,18 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+const createError = require('http-errors');
+const express = require('express');
+const path = require('path');
+const cookieParser = require('cookie-parser');
+const logger = require('morgan');
 
-var indexRouter = require('./routes/index');
-var userRouter = require('./routes/user');
-var topicRouter = require('./routes/topic');
+const indexRouter = require('./routes/index');
+const userRouter = require('./routes/user');
+const topicRouter = require('./routes/topic');
+const Errors = require('./errors')
 
 // 链接数据库 
 require('./services/mongoose_service')
 
-var app = express();
+const app = express();
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -34,13 +35,21 @@ app.use(function(req, res, next) {
 
 // error handler
 app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
+    // 异常处理
+    if(err instanceof Errors.BaseHTTPError){
+      res.statusCode = err.httpCode;
+      res.json({
+        code:err.OPCode,
+        msg:err.httpMsg
+      })
+    }else{
+      res.statusCode = 500;
+      res.json({
+        code:Errors.BaseHTTPError.DEFAULT_OPCODE,
+        msg:'服务器好像出了问题！，请稍候访问吧~'
+      })
+    }
+    console.log(err)
 });
 
 module.exports = app;

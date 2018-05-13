@@ -5,6 +5,8 @@ const  bluebird = require('bluebird');
 const  pbkdf2Async = bluebird.promisify(crypto.pbkdf2)
 // 
 const SALT = require('../../cipher').PASSWORD_SALT;
+// 引入错误处理类
+const Errors = require('../../errors')
 
 const UserSchema = new Schema({
     name:{type:String,require:true},
@@ -32,7 +34,6 @@ async function createANewUser(params){
             age:params.age,
             phoneNumber:params.phoneNumber
         });
-    // 这一步虽然设置了密码  但是。。。  获取所有用户的时候  返回的是users 所以密码也返回了 这是不安全的
     user.password = await pbkdf2Async(params.password,SALT,512, 128 ,'sha1')
                     .then(r=>{
                         console.log(r.toString())
@@ -46,10 +47,10 @@ async function createANewUser(params){
     .catch(e=>{
         switch(e.code){
             case 11000:
-                throw new Error('该用用户名已经被注册！！！')
+                throw new Errors.DuplicatedUserNameError(params.name)
                 break;
             default:
-                throw new Error(`error creating user ${JSON.stringify(params)}`)
+                throw new Errors.ValidationError('user',`error creating user ${JSON.stringify(params)}`)
                 break;        
         }
         console.log('create user err');
@@ -104,7 +105,7 @@ async function login(phoneNumber,password){
     })
     .catch(e=>{
         console.log(e)
-        throw new Error('密钥生成失败')
+        throw new Errors.InternalError('密钥生成失败')
     })
     const user = await UserModule.findOne({phoneNumber:phoneNumber,password:password})
         .select(DEFAULT_PROJECTION)    
