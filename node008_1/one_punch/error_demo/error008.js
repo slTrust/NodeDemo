@@ -19,6 +19,9 @@ class ValidationError extends BaseHTTPError{
         const httpCode = 400;
         super(`error validation param,path:${path},reason:${reason}`,OPCode,httpCode,'参数错误请稍候再试！')
     }
+    toString(){
+        console.log('validationError')
+    }
 }
 
 let e = new ValidationError('age','age should be >18')
@@ -26,3 +29,6 @@ console.log(JSON.stringify(e.stack))
 console.log(JSON.stringify(e.name))
 console.log(JSON.stringify(e.message))
 console.log(JSON.stringify(e.httpCode))
+console.log(JSON.stringify(e.httpMsg))
+
+console.log(JSON.stringify(e))
